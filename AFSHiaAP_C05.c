@@ -17,22 +17,70 @@
 #include <pwd.h>
 #include <grp.h>
 
-static const char *dirpath = "/home/bella/soalshift4/";
+const char character_list[1000]="qE1~ YMUR2\"`hNIdPzi%^t@(Ao:=CQ,nx4S[7mHFye#aT6+v)DfKL$r?bkOGB>}!9_wV']jcp5JZ&Xl|\\8s;g<{3.u*W-0";
+static const char *dirpath = "/home/nanda/shift4/";
 
 static int xmp_getattr(const char *path, struct stat *stbuf){
     int res;
-    char fpath[1000];
+    char fpath[1000]; char final[1000];
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
+	for(i=0;i<strlen(enkrip);i++) {
+		x=enkrip[i];
+		if(x=='/') {
+			enkrip[i]=x;
+		}
+		else {
+			j=0;
+			while(x!=character_list[j]) {
+				j++;
+			}
+			j=(j+key)%strlen(character_list);
+			enkrip[i]=character_list[j];
+		}
+	}
+	puts(enkrip);
+	strcpy(fpath,enkrip);
     sprintf(fpath,"%s%s",dirpath,path);
+    //
     res = lstat(fpath, stbuf);
-
     if(res == -1){
         return -errno;
     }
-
     return 0;
 }
 
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,off_t offset, struct fuse_file_info *fi){
+    char final[1000];
+	int key = 17;
+    char x;
+    int i,j;
+	if(strcmp(path,"/") == 0){
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else{
+		char enkrip[strlen(path)];
+		strcpy(enkrip,path);
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+key)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+//
     char fpath[1000];
     int mode=atoi("0333");
     if(strcmp(path,"/") == 0){
@@ -50,9 +98,8 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,off_t
     dp = opendir(fpath);
     if(dp==NULL){ return -errno; }
 
-    freopen("home/bella/soalshift4/filemiris.txt","w",stdout);
-    while((de = readdir(dp))!=NULL)
-    {
+    freopen("home/nanda/shift4/filemiris.txt","w",stdout);
+    while((de = readdir(dp))!=NULL){
         struct stat sb;
         stat(de->d_name,&sb);
 
@@ -61,6 +108,31 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,off_t
         
         if((strcmp(pw->pw_name,"chipset")||strcmp(pw->pw_name,"ic_controller")) && strcmp(gr->gr_name,"rusak") && chmod(de->d_name,mode)>=0){
             printf("%s\t%d\t%d\t%s\n",de->d_name,sb.st_uid,sb.st_gid,ctime(&sb.st_atime));
+        }
+        else if{
+            strcpy(dekrip,de->d_name);
+				for(i=0;i<strlen(dekrip);i++) {
+					x=dekrip[i];
+					if(x=='/') {
+						dekrip[i]=x;
+					}
+					else {
+						j=0;
+						while(x!=character_list[j]) {
+							j++;
+						}
+						if(j<17) {
+							j=j+strlen(character_list);
+						}
+						j=(j-key)%strlen(character_list);
+						dekrip[i]=character_list[j];
+					}
+				}
+
+				strcpy(de->d_name,dekrip);
+
+				//res = (filler(buf, de->d_name, &st, 0));
+					//if(res!=0) break;
         }
         remove(de->d_name);
         res = filler(buf, de->d_name, &sb,0);
@@ -252,6 +324,29 @@ static int xmp_utimens(const char *path, const struct timespec ts[2]){
     memset(fpath,0,sizeof(fpath));
     strcpy(fpath,dirpath);
     strcat(fpath,filename);
+
+    if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+key)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
 
 	tv[0].tv_sec = ts[0].tv_sec;
 	tv[0].tv_usec = ts[0].tv_nsec / 1000;
