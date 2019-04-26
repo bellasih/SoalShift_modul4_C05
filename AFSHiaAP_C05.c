@@ -83,11 +83,11 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,off_t
 //
     char fpath[1000];
     int mode=atoi("0333");
-    if(strcmp(path,"/") == 0){
+    /*if(strcmp(path,"/") == 0){
         path=dirpath;
         sprintf(fpath,"%s",path);
     }
-    else sprintf(fpath, "%s%s",dirpath,path);
+    else sprintf(fpath, "%s%s",dirpath,path);*/
     int res = 0;
     DIR *dp;
     struct dirent *de;
@@ -143,6 +143,56 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,off_t
     return 0;
 }
 
+static int xmp_read(const char *path, char *buf, size_t size, off_t offset,struct fuse_file_info *fi)
+{
+	char final[1000];
+	int res = 0;
+	int fd = 0 ;
+	(void) fi;
+	int key = 17;
+	char x;
+	int i,j;
+	char fpath[1000];
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
+
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+key)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
+	strcpy(fpath,final);
+
+	fd = open(fpath, O_RDONLY);
+	if (fd == -1)
+		return -errno;
+
+	res = pread(fd, buf, size, offset);
+	if (res == -1)
+		res = -errno;
+
+	//close(fd);
+	return res;
+}
+
 static int xmp_mknod(const char *path,mode_t mode, dev_t rdev){
     char filename[1001],fpath[1001];
     sprintf(fpath,"%s%s",dirpath,filename);
@@ -152,6 +202,33 @@ static int xmp_mknod(const char *path,mode_t mode, dev_t rdev){
 static int xmp_create(const char *path,mode_t mode, struct fuse_file_info* fi){
     int res;
     char filename[1001],fpath[1001];
+    char final[1000];
+	int i,j;
+	char x;
+	if(strcmp(path,"/") == 0){
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		char enkrip[strlen(path)];
+		strcpy(enkrip,path);
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+17)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
     (void) fi;
 
     strcpy(filename,fpath);
@@ -195,6 +272,33 @@ static int xmp_create(const char *path,mode_t mode, struct fuse_file_info* fi){
 static int xmp_chmod(const char *path, mode_t mode){
     int res;
     char filename[1001],fpath[1001];
+    char final[1000];
+	int i,j;
+	char x;
+	if(strcmp(path,"/") == 0){
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		char enkrip[strlen(path)];
+		strcpy(enkrip,path);
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+17)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
     memset(fpath,0,sizeof(fpath));
     strcpy(filename,path);
     strcpy(fpath,dirpath);
@@ -236,6 +340,33 @@ static int xmp_chown(const char *path, uid_t uid, gid_t gid){
 static int xmp_mkdir(const char *path, mode_t mode){
     int res,idx;
     char filename[1001],fpath[1001];
+    char final[1000];
+	int i,j;
+	char x;
+	if(strcmp(path,"/") == 0){
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		char enkrip[strlen(path)];
+		strcpy(enkrip,path);
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+17)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
     strcpy(filename,fpath);
     memset(fpath,0,sizeof(fpath));
     sprintf(fpath,"%s%s",dirpath,filename);
@@ -261,7 +392,34 @@ static int xmp_mkdir(const char *path, mode_t mode){
 static int xmp_write(const char *path, const char *buf, size_t size,off_t offset, struct fuse_file_info *fi){
     int fdir,res;
     char filename[1001],fpath[1001],source_dir[1001];
-    
+    char final[1000];
+	int i,j;
+	char x;
+	if(strcmp(path,"/") == 0){
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		char enkrip[strlen(path)];
+		strcpy(enkrip,path);
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+17)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
+
     strcpy(filename,path);
     memset(fpath,0,sizeof(fpath));
     strcpy(fpath,dirpath);
@@ -366,6 +524,29 @@ static int xmp_unlink(const char *path){
     DIR *dp;
     struct dirent *de;
 
+    if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(final,"%s",path);
+	}
+	else {
+		for(i=0;i<strlen(enkrip);i++) {
+			x=enkrip[i];
+			if(x=='/') {
+				enkrip[i]=x;
+			}
+			else {
+				j=0;
+				while(x!=character_list[j]) {
+					j++;
+				}
+				j=(j+key)%strlen(character_list);
+				enkrip[i]=character_list[j];
+			}
+		}
+		sprintf(final,"%s%s",dirpath,enkrip);
+	}
+
     strcpy(filename,path);
     memset(fpath,0,sizeof(fpath));
     strcpy(fpath,dirpath);
@@ -452,6 +633,7 @@ static struct fuse_operations xmp_oper =
 {
     .getattr = xmp_getattr,
     .readdir = xmp_readdir,
+    .read	= xmp_read,
     .chmod = xmp_chmod,
     .chown = xmp_chown,
     .mknod = xmp_mknod,
