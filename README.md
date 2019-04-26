@@ -17,13 +17,13 @@ Kelompok C05:
 
 2. Semua file video yang tersimpan secara terpecah-pecah (splitted) harus secara otomatis tergabung (joined) dan diletakkan dalam folder “Videos”</br>
    Urutan operasi dari kebutuhan ini adalah:</br>
-a. Tepat saat sebelum file system di-mount</br>
+   1. Tepat saat sebelum file system di-mount</br>
       - Secara otomatis folder “Videos” terbuat di root directory file system</br>
       - Misal ada sekumpulan file pecahan video bernama “computer.mkv.000”, “computer.mkv.001”, “computer.mkv.002”, dst. Maka secara otomatis file pecahan tersebut akan di-join menjadi file video “computer.mkv”. Untuk mempermudah kalian, dipastikan hanya video file saja yang terpecah menjadi beberapa file. File pecahan tersebut dijamin terletak di root folder fuse</br>
       - Karena mungkin file video sangat banyak sehingga mungkin saja saat menggabungkan file video, file system akan membutuhkan waktu yang lama untuk sukses ter-mount. Maka pastikan saat akan menggabungkan file pecahan video, file system akan membuat 1 thread/proses(fork) baru yang dikhususkan untuk menggabungkan file video tersebut</br>
       - Pindahkan seluruh file video yang sudah ter-join ke dalam folder “Videos”</br>
       - Jangan tampilkan file pecahan di direktori manapun</br>
-b. Tepat saat file system akan di-unmount</br>
+    2. Tepat saat file system akan di-unmount</br>
       - Hapus semua file video yang berada di folder “Videos”, tapi jangan hapus file pecahan yang terdapat di root directory file system</br>
       - Hapus folder “Videos” </br>
       
