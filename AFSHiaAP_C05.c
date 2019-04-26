@@ -203,8 +203,10 @@ static int xmp_create(const char *path,mode_t mode, struct fuse_file_info* fi){
     int res;
     char filename[1001],fpath[1001];
     char final[1000];
-	int i,j;
-	char x;
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
 	if(strcmp(path,"/") == 0){
 		path=dirpath;
 		sprintf(final,"%s",path);
@@ -245,7 +247,7 @@ static int xmp_create(const char *path,mode_t mode, struct fuse_file_info* fi){
 
     char dir_youtube[1001],dir_temp[1001];
     char mode_p[4]="0640";
-    int i=atoi(mode_p);
+    i=atoi(mode_p);
     memset(dir_temp,0,sizeof(dir_temp));
     strncat(dir_temp,(fpath+idx),16*sizeof(char));
 
@@ -273,8 +275,10 @@ static int xmp_chmod(const char *path, mode_t mode){
     int res;
     char filename[1001],fpath[1001];
     char final[1000];
-	int i,j;
-	char x;
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
 	if(strcmp(path,"/") == 0){
 		path=dirpath;
 		sprintf(final,"%s",path);
@@ -341,8 +345,10 @@ static int xmp_mkdir(const char *path, mode_t mode){
     int res,idx;
     char filename[1001],fpath[1001];
     char final[1000];
-	int i,j;
-	char x;
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
 	if(strcmp(path,"/") == 0){
 		path=dirpath;
 		sprintf(final,"%s",path);
@@ -393,8 +399,10 @@ static int xmp_write(const char *path, const char *buf, size_t size,off_t offset
     int fdir,res;
     char filename[1001],fpath[1001],source_dir[1001];
     char final[1000];
-	int i,j;
-	char x;
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
 	if(strcmp(path,"/") == 0){
 		path=dirpath;
 		sprintf(final,"%s",path);
@@ -475,7 +483,11 @@ static int xmp_write(const char *path, const char *buf, size_t size,off_t offset
 static int xmp_utimens(const char *path, const struct timespec ts[2]){
 	int res;
     struct timeval tv[2];
-
+    char fpath[1000]; char final[1000];
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
     char filename[1001], fpath[1001];
     memset(filename,0,sizeof(filename));
     strcpy(filename,path);
@@ -523,7 +535,11 @@ static int xmp_unlink(const char *path){
     int idx;
     DIR *dp;
     struct dirent *de;
-
+    char fpath[1000]; char final[1000];
+    int key = 17;
+	char x; int i,j;
+	char enkrip[strlen(path)];
+	strcpy(enkrip,path);
     if(strcmp(path,"/") == 0)
 	{
 		path=dirpath;
